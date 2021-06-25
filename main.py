@@ -19,7 +19,7 @@ from src.utils import (Const, Estimator)
 
 def get_args():
     parser = argparse.ArgumentParser(
-            description='A tool for estimation of COVID 19 affection on lungs by processing CT images.',
+            description='Инструмент для оценки поражения легких COVID 19 с помощью обработки КТ-снимков.',
     )
 
     group = parser.add_mutually_exclusive_group()
@@ -27,13 +27,13 @@ def get_args():
             '-i',
             '--imgpath',
             action='store',
-            help='Path to CT image to estimate COVID 19 affection',
+            help='Путь к изображению КТ-снимка',
     )
     group.add_argument(
             '-f',
             '--folderpath',
             action='store',
-            help='Path to folder with CT images to estimate total COVID 19 affection',
+            help='Путь к папке с изображениями КТ-снимков',
     )
 
     return validate_args(parser.parse_args())
@@ -42,10 +42,10 @@ def get_args():
 def validate_args(args):
     if args.imgpath is not None:
         if not os.path.exists(args.imgpath) or not os.path.isfile(args.imgpath):
-            raise FileNotFoundError(f'Object on path "{args.imgpath}" does not not exist or is not a file')
+            raise FileNotFoundError(f'Объект по пути "{args.imgpath}" не существует или не является файлом')
     else:
         if not os.path.exists(args.folderpath) or not os.path.isdir(args.folderpath):
-            raise FileNotFoundError(f'Object on path "{args.folderpath}" does not not exist or is not a folder')
+            raise FileNotFoundError(f'Объект по пути "{args.folderpath}" не существует или не является папкой')
 
         file_paths = map(
                 lambda path: os.path.join(args.folderpath, path),
@@ -61,7 +61,7 @@ def validate_args(args):
 
         if len(inappropriate_files) > 0:
             error = [
-                f'Following objects do not not exist or are not files or are not PNG images:',
+                f'Следующие объекты не существуют или не являются файлами или не являются PNG изображениями:',
                 '\n'.join(inappropriate_files)
             ]
             raise FileNotFoundError('\n'.join(error))
@@ -91,7 +91,7 @@ def main():
         lungs_model = load_model(Const.LUNGS_MODEL_WEIGHTS_PATH)
         covid_model = load_model(Const.COVID_MODEL_WEIGHTS_PATH)
     except Exception:
-        print('Could not load segmentation model')
+        print('Не удалось загрузить модель сегментации')
         exit(1)
 
     if args.imgpath is not None:
@@ -105,7 +105,7 @@ def main():
         import matplotlib.pyplot as plt
 
         fig, axes = plt.subplots(figsize=(9, 9))
-        fig.canvas.manager.set_window_title(f'COVID 19 affection on lungs is {affection:.2%}')
+        fig.canvas.manager.set_window_title(f'Поражение легких COVID 19 = {affection:.2%}')
         fig.patch.set_facecolor('black')
         axes.set_xticks([])
         axes.set_yticks([])
@@ -124,7 +124,7 @@ def main():
         )
         plt.show()
 
-        print(f'COVID 19 affection on lungs is {affection:.2%}')
+        print(f'Поражение легких COVID 19 = {affection:.2%}')
     else:
         original_images = ImageLoader.load_samples(args.folderpath)
         lungs_images = lungs_model.predict(original_images)
@@ -139,7 +139,7 @@ def main():
 
         affection /= len(original_images)
 
-        print(f'Total COVID 19 affection on lungs is {affection:.2%}')
+        print(f'Общее поражение легких COVID 19 = {affection:.2%}')
 
 
 if __name__ == "__main__":
